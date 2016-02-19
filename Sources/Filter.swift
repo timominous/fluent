@@ -11,17 +11,17 @@ public class CompareFilter: Filter {
 	public let key: String
 	public let value: String
 	public let comparison: Comparison
-	public let joinOperator: Operator
+	public let joinOperator: FilterOperator
 
-	init(key: String, value: String, comparison: Comparison, joinOperator: Operator) {
+	init(key: String, value: String, comparison: Comparison, joinOperator: FilterOperator) {
 		self.key = key
 		self.value = value
 		self.comparison = comparison
 		self.joinOperator = joinOperator
 	}
 
-	override func joinOperation() -> Operator {
-		return joinOperator
+	public var filterString: String {
+		return "`\(key)` \(comparison.rawValue) '\(value)'"
 	}
 }
 
@@ -34,9 +34,9 @@ public class SubsetFilter: Filter {
 	public let key: String
 	public let superSet: [String]
 	public let comparison: Comparison
-	public let joinOperator: Operator
+	public let joinOperator: FilterOperator
 
-	init(key: String, superSet: [String], comparison: Comparison, joinOperator: Operator) {
+	init(key: String, superSet: [String], comparison: Comparison, joinOperator: FilterOperator) {
 		self.key = key
 		self.superSet = superSet
 		self.comparison = comparison
@@ -48,19 +48,18 @@ public class SubsetFilter: Filter {
 		return "(" + elements.joinWithSeparator(",") + ")"
 	}
 
-	override func joinOperation() -> Operator {
-		return joinOperator
+	public var filterString: String {
+		return "`\(key)` \(comparison.rawValue) \(superSetString)"
 	}
 }
 
-public class Filter {
-	public enum Operator: String {
-		case And = "AND"
-		case Or = "OR"
-		case None = ""
-	}
+public protocol Filter {
+	var joinOperator: FilterOperator { get }
+	var filterString: String { get }
+}
 
-	func joinOperation() -> Operator {
-		return .None
-	}
+public enum FilterOperator: String {
+	case And = "AND"
+	case Or = "OR"
+	case None = ""
 }
