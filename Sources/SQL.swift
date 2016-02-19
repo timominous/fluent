@@ -87,12 +87,8 @@ public class SQL {
 			}
 
 			for (index, filter) in filters.enumerate() {
-				query.append((index > 0) ? " \(filter.joinOperation().rawValue)" : "")
-				if let filter = filter as? CompareFilter {
-					query.append(" `\(filter.key)` \(filter.comparison.rawValue) '\(filter.value)'")
-				} else if let filter = filter as? SubsetFilter {
-					query.append(" `\(filter.key)` \(filter.comparison.rawValue) \(filter.superSetString)")
-				}
+				query.append((index > 0) ? " \(filter.joinOperator.rawValue)" : "")
+				query.append(" " + filter.filterString)
 			}
 		}
 
